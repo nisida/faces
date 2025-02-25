@@ -4,7 +4,7 @@
 """_summary_
 
 ============================================
-Convert npy to PIL image 
+内蔵カメラを使った顔認識アプリ 
 ============================================
 
 """
@@ -24,7 +24,7 @@ FACTOR          = 1.1
 THICK           = 10
 RED             = (0, 0, 255)
 
-def detect_write(cascade, frame, scale = FACTOR) :
+def detect_write(cascade, frame, b_faces, scale = FACTOR) :
     """ １つの画像の顔検出を行う
     Arg:
         cas   : cv2.CascadeClassifier
@@ -33,14 +33,19 @@ def detect_write(cascade, frame, scale = FACTOR) :
     gray     = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces    = cascade.detectMultiScale(gray, scaleFactor = scale) # scaleFactorを調べたい
     
-    for (x, y, w, h) in faces :
-        cv2.rectangle(frame, (x, y), (x + w, y + h),  color = RED, thickness = THICK)
-        
+    if len(faces) > 0 :   # 顔認識成功
+        b_faces = faces
+    else :                # 顔認識失敗
+        faces = b_faces
     
-    return frame, faces
+    for (x, y, w, h) in b_faces :
+        cv2.rectangle(frame, (x, y), (x + w, y + h),  color = RED, thickness = THICK)
+    
+    return frame, b_faces
 
 # カメラのキャプチャを開始
 cap = cv2.VideoCapture(0)  # 0は通常、内蔵カメラを指します。必要に応じて変更してください。
+b_faces = []  # 顔認識に成功したfacesを保存するリスト
 
 cascade = cv2.CascadeClassifier(MODEL)
 
@@ -54,7 +59,7 @@ while True:
         print("フレームを取得できませんでした。")
         break
 
-    frame, faces = detect_write(cascade, frame)
+    frame, b_faces = detect_write(cascade, frame, b_faces, FACTOR)
     cv2.imshow("Camera", frame)  # フレームを表示する
 
     # 'q'キーが押されたら終了
