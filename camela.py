@@ -19,7 +19,7 @@ print(__doc__)
 import os
 import cv2
 
-MODEL           = '../key_point_and_tips/haarcascade_frontalface_default.xml'
+MODEL           = 'haarcascade_frontalface_default.xml'
 FACTOR          = 1.1
 THICK           = 10
 RED             = (0, 0, 255)
